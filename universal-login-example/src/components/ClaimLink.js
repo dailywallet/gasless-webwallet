@@ -163,17 +163,18 @@ class ClaimLink extends Component {
     _renderClaimLinks() {
 	const dailyLink = `app://dailywallet/claim${this.props.location.search}`;
 	const btnClass = this.state.disabled ? "btn fullwidth disabled" : "btn fullwidth";
-	if (this._getDeviceOS() === 'android') { 
-	    return (
-		    <div>
-		    <div style={{marginTop: 20}}>
-		    <a style={{width: 100, padding:10}} className={btnClass} href={dailyLink}> Use Daily Wallet </a>
-		    </div>		
-		    </div>	    
-	    );
-	} else {
-	    return ( <button style={{ marginTop: 20, width: 100}} className={btnClass} onClick={this.claimLink.bind(this)}> <div>Claim </div></button>);
-	}
+	//if (this._getDeviceOS() === 'android') { 
+	return (
+		<div>
+		<div style={{marginTop: 20}}>
+		<a style={{width: 100, padding:10}} className={btnClass} href={dailyLink}> Use Daily Wallet </a>
+		</div>		
+		</div>	    
+	);
+	//} else {
+	    // return ( <button style={{ marginTop: 20, width: 100}} className={btnClass} onClick={this.claimLink.bind(this)}> <div>Claim </div></button>);
+	//	    return null;
+	//	}
     }
 
     _renderClaimBtn() {
