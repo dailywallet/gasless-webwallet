@@ -86,7 +86,7 @@ class ClaimLink extends Component {
     claimLink() {
 	console.log("In a claim link");
 	if (this.state.disabled) { return false; }
-	const {
+	let {
 	    identity, 
 	    identityPK,	    
 	    sigSender,
@@ -95,18 +95,31 @@ class ClaimLink extends Component {
 	    sender
 	} = this.state;
 	this.setState({disabled: true});
+
+	let receiverPubKey;
+	if (identityPK) { 
+	    receiverPubKey = new ethers.Wallet(identityPK).address;
+	} else {
+	    const identityWallet = ethers.Wallet.createRandom();
+	    receiverPubKey = identityWallet.address;
+	    identityPK = identityWallet.privateKey;
+	}
+	
+	
 	//try { 
 	//     // send tx
 	this.props.sdk.transferByLink({
 	    token: TOKEN_ADDRESS,
-	    amount, sender,
+	    amount,
+	    sender,
 	    sigSender,
-	    transitPK, identityPK
-	}).then(({ response, txHash, identityPK: newIdentityPK }) => { 
-	    console.log({response, txHash, newIdentityPK});
+	    transitPK,
+	    receiverPubKey
+	}).then(({ response, txHash}) => { 
+	    console.log({response, txHash});
 	    // store pending tx Hash
 		localStorage.setItem("LINKS_PENDING_TX_HASH", txHash);
-		localStorage.setItem("LINKS_IDENTITY_PK", newIdentityPK);
+		localStorage.setItem("LINKS_IDENTITY_PK", identityPK);
 		this.setState({
 		    txHash
 		});
@@ -119,7 +132,7 @@ class ClaimLink extends Component {
 		    newIdentity = txReceipt.logs[0] && txReceipt.logs[0].address;
 		    
 		    this._saveToLocalStorage({
-			identityPK: newIdentityPK,
+			identityPK: identityPK,
 			identity: newIdentity
 		    });
 		}	
@@ -163,18 +176,18 @@ class ClaimLink extends Component {
     _renderClaimLinks() {
 	const dailyLink = `app://dailywallet/claim${this.props.location.search}`;
 	const btnClass = this.state.disabled ? "btn fullwidth disabled" : "btn fullwidth";
-	//if (this._getDeviceOS() === 'android') { 
-	return (
-		<div>
-		<div style={{marginTop: 20}}>
-		<a style={{width: 100, padding:10}} className={btnClass} href={dailyLink}> Use Daily Wallet </a>
-		</div>		
-		</div>	    
-	);
-	//} else {
-	    // return ( <button style={{ marginTop: 20, width: 100}} className={btnClass} onClick={this.claimLink.bind(this)}> <div>Claim </div></button>);
-	//	    return null;
-	//	}
+	if (this._getDeviceOS() === 'android') { 
+	    return (
+		    <div>
+		    <div style={{marginTop: 20}}>
+		    <a style={{width: 100, padding:10}} className={btnClass} href={dailyLink}> Use xDaily Wallet </a>
+		    </div>		
+		    </div>	    
+	    );
+	} else {
+	    return ( <div>Copy the link and paste it in the Daily Wallet app</div>);
+	}
+
     }
 
     _renderClaimBtn() {
@@ -219,8 +232,7 @@ class ClaimLink extends Component {
 	const claimTo = this.state.newIdentity ? "New account" : (<EtherscanAddressLink address={this.state.identity} />);
 	return (
 		<div>
-		<div style={{paddingTop: 10}}> Amount: ${this.state.amount / 100}</div>
-		<div style={{paddingTop: 10}}> Claim To: {claimTo} </div>
+		<div style={{paddingTop: 10}}> Amount: ${this.state.amount / Math.pow(10,18)}</div>
 		</div>
 	);
     }
