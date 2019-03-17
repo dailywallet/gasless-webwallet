@@ -6,10 +6,10 @@ export default class FaucetLink extends Component {
     
     generateFaucetLink() {
 
-	const faucetIdentity = "0x018b8cc651F603357e61Ee580570F4286239BD25";
-	const faucetPK = "0x5b23ecd5ec23f197a1e1bfece28961f1723be79287d86a08ba2eba140ef8b061";
+	const faucetIdentity = "0xAAFF3ccaf80f539FC58FCA7BBC747C180C7401d3";
+	const faucetPK = "";
 	
-	const amount = Math.pow(10, 20).toString();
+	const amount = Math.pow(10, 18).toString();
 	
 	const { sigSender, transitPK } = this.props.sdk.generateLink({privateKey: faucetPK, token: TOKEN_ADDRESS, amount}); 
 

@@ -131,7 +131,7 @@ contract InviteLinkScheme is KeyHolder {
     usedLinks[transitPubKey] = true;   
     
     // get receiver wallet
-    IdentityFactory _identityFactory = IdentityFactory(0xe0f8804f944687db7899943b53eb0a16600fce39);    
+    IdentityFactory _identityFactory = IdentityFactory(0x5c365460b3db3C6E22D47cC80A32E4dbC0C628f8);    
     address receiverWallet = _identityFactory.getIdentity(receiverPubKey);
     if (receiverWallet == 0x0) {
       receiverWallet = _identityFactory.createIdentity(receiverPubKey);      
