@@ -180,12 +180,12 @@ class ClaimLink extends Component {
 	    return (
 		    <div>
 		    <div style={{marginTop: 20}}>
-		    <a style={{width: 100, padding:10}} className={btnClass} href={dailyLink}> Use Daily Wallet </a>
+		    <a style={{width: 100, padding:10}} className={btnClass} href={dailyLink}> Use xDaily Wallet </a>
 		    </div>		
 		    </div>	    
 	    );
 	} else {
-	    return ( <button style={{ marginTop: 20, width: 100}} className={btnClass} onClick={this.claimLink.bind(this)}> <div>Claim </div></button>);
+	    return ( <div>Copy the link and paste it in the Daily Wallet app</div>);
 	}
     }
 
@@ -232,7 +232,6 @@ class ClaimLink extends Component {
 	return (
 		<div>
 		<div style={{paddingTop: 10}}> Amount: ${this.state.amount / Math.pow(10,18)}</div>
-		<div style={{paddingTop: 10}}> Claim To: {claimTo} </div>
 		</div>
 	);
     }

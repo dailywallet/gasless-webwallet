@@ -73,7 +73,7 @@ class LinkAccount extends Component {
     }
     
     render() {
-	return this.state.identityPK ? this._renderAccount() : (<FaucetLink sdk={this.props.sdk} />);
+	return this.state.identityPK ? this._renderAccount() : null;
     }
 }
 
