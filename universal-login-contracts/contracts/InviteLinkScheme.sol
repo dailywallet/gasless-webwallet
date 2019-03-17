@@ -50,8 +50,13 @@ contract InviteLinkScheme is KeyHolder {
 
   
   function hasEnoughTokens(address tokenAddress, uint tokenAmount) public view returns (bool) {
-    ERC20 token = ERC20(tokenAddress);
-    uint senderBalance = token.balanceOf(address(this));
+    uint senderBalance;
+    if (tokenAddress == 0x000000000000000000000000000000000000000) {
+      senderBalance = address(this).balance;
+    } else { 
+      ERC20 token = ERC20(tokenAddress);
+      senderBalance = token.balanceOf(address(this));
+    }
     return senderBalance > 0 && senderBalance >= tokenAmount;
   }
 
@@ -92,6 +97,14 @@ contract InviteLinkScheme is KeyHolder {
     return keyExist(bytes32(signer));
   }
 
+  function transferToken(address receiverWallet, address tokenAddress, uint tokenAmount) private {
+    if (tokenAddress == 0x000000000000000000000000000000000000000) {
+      receiverWallet.transfer(tokenAmount); // if eth
+    } else { // if erc20 tokens
+      ERC20 token = ERC20(tokenAddress);
+      token.transfer(receiverWallet, tokenAmount);
+    }
+  }
   
   function transferByLink(
 			  address tokenAddress,
@@ -125,8 +138,7 @@ contract InviteLinkScheme is KeyHolder {
     }
 
     // transfer tokens
-    ERC20 token = ERC20(tokenAddress);
-    token.transfer(receiverWallet, tokenAmount);
+    transferToken(receiverWallet, tokenAddress, tokenAmount);
   }
 
 }
