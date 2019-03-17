@@ -17,8 +17,8 @@ class App extends Component {
     constructor(props) {
 	super(props);
 
-	const serverUrl = 'https://gasless-ropsten.eth2phone.com';
-	this.provider = new ethers.providers.JsonRpcProvider('https://ropsten.infura.io');
+	const serverUrl = 'https://gasless-xdai.eth2phone.com';
+	this.provider = new ethers.providers.JsonRpcProvider('https://dai.poa.network');
 	
 	this.sdk = new EthereumIdentitySDK(
 	    serverUrl,
