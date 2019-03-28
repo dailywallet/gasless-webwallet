@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.6.0;
 
 import './Identity.sol';
 import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
@@ -26,7 +26,7 @@ contract IdentityFactory is Ownable, CloneFactory {
     // only one identity contract per public key
     require(getIdentity(_key) == 0x0);
     
-    address newIdentityAddr = createClone(libraryAddress);
+    address newIdentityAddr = createClone(libraryAddress, uint256(_key));
 
     identitiesDct[_key] = newIdentityAddr;
     
