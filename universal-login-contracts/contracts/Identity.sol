@@ -2,9 +2,10 @@ pragma solidity ^0.4.24;
 
 import "./ERC1077.sol";
 import './InviteLinkScheme.sol';
+import './DaiToXdaiMovable.sol';
 
 
-contract Identity is ERC1077, InviteLinkScheme {
+contract Identity is ERC1077, InviteLinkScheme, DaiToXdaiMovable {
   constructor(bytes32 _key) payable public  {
     ERC1077.init(_key);
   }
