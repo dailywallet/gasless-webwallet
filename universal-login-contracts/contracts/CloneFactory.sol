@@ -1,4 +1,5 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
+
 /*
 The MIT License (MIT)
 Copyright (c) 2018 Murray Software, LLC.
@@ -24,7 +25,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 contract CloneFactory {
 
-  function createClone(address target, uint256 salt) internal returns (address result) {
+  function createClone(address target, uint256 salt) internal returns (address payable result) {
     bytes20 targetBytes = bytes20(target);
     assembly {
       let clone := mload(0x40)

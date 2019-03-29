@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 
 contract ERC725KeyHolder {    
@@ -20,6 +20,6 @@ contract ERC725KeyHolder {
 
     function getKey(bytes32 _key) public view returns(uint256 purpose, uint256 keyType, bytes32 key);
     function getKeyPurpose(bytes32 _key) public view returns(uint256 purpose);
-    function getKeysByPurpose(uint256 _purpose) public view returns(bytes32[] keys);
+    function getKeysByPurpose(uint256 _purpose) public view returns(bytes32[] memory keys);
     function addKey(bytes32 _key, uint256 _purpose, uint256 _keyType) public returns (bool success);
 }

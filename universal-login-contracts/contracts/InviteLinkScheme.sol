@@ -1,15 +1,15 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "openzeppelin-solidity/contracts/AddressUtils.sol";
-import "openzeppelin-solidity/contracts/ECRecovery.sol";
+import "openzeppelin-solidity/contracts/utils/Address.sol";
+import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
 import './IdentityFactory.sol';
 import "./KeyHolder.sol";
 
 
 contract InviteLinkScheme is KeyHolder {
-  using ECRecovery for bytes32;  
-  using AddressUtils for address;
+  using ECDSA for bytes32;  
+  using Address for address payable;
 
   // Mappings of transit pub key => true if link is used.
   mapping (address => bool) usedLinks;
@@ -20,8 +20,8 @@ contract InviteLinkScheme is KeyHolder {
 		       uint tokenAmount,		       
 		       address receiverAddress,
 		       address transitPubKey,
-		       bytes sigSender,
-		       bytes sigReceiver) public view returns (bool) {
+		       bytes memory sigSender,
+		       bytes memory sigReceiver) public view returns (bool) {
 
     //  checks
     // 0. token amount check
@@ -51,7 +51,7 @@ contract InviteLinkScheme is KeyHolder {
   
   function hasEnoughTokens(address tokenAddress, uint tokenAmount) public view returns (bool) {
     uint senderBalance;
-    if (tokenAddress == 0x0) {
+    if (tokenAddress == 0x0000000000000000000000000000000000000000) {
       senderBalance = address(this).balance;
     } else { 
       ERC20 token = ERC20(tokenAddress);
@@ -68,7 +68,7 @@ contract InviteLinkScheme is KeyHolder {
   
   function checkReceiverSignature(address receiverAddress,
 				  address transitPubKey,
-				  bytes sigReceiver) public view returns (bool) {
+				  bytes memory sigReceiver) public pure returns (bool) {
 
     // hash signed by receiver using transit private key
     bytes32 hash = keccak256(abi.encodePacked(receiverAddress,
@@ -83,7 +83,7 @@ contract InviteLinkScheme is KeyHolder {
 				address transitPubKey,
 				address tokenAddress,
 				uint tokenAmount,
-				bytes sigSender) public view returns(bool) {
+				bytes memory sigSender) public view returns(bool) {
 
     // calculate hash signed by sender
     bytes32 hash = keccak256(abi.encodePacked(
@@ -94,11 +94,11 @@ contract InviteLinkScheme is KeyHolder {
     
     // check that the hash was signed by sender
     address signer = hash.toEthSignedMessageHash().recover(sigSender);
-    return keyExist(bytes32(signer));
+    return keyExist(bytes32(bytes20(signer)));
   }
 
-  function transferToken(address receiverWallet, address tokenAddress, uint tokenAmount) private {
-    if (tokenAddress == 0x0) {
+  function transferToken(address payable receiverWallet, address tokenAddress, uint tokenAmount) private {
+    if (tokenAddress == 0x0000000000000000000000000000000000000000) {
       receiverWallet.transfer(tokenAmount); // if eth
     } else { // if erc20 tokens
       ERC20 token = ERC20(tokenAddress);
@@ -111,28 +111,28 @@ contract InviteLinkScheme is KeyHolder {
 			  uint256 tokenAmount,
 			  bytes32 receiverPubKey, // address of Wallet Contract or receiver's public key if new address			  
 			  address transitPubKey,			  			  
-			  bytes sigSender,
-			  bytes sigReceiver
+			  bytes memory sigSender,
+			  bytes memory sigReceiver
 			  ) public {
     
     require(isLinkValid(
 		       tokenAddress,
 		       tokenAmount,		       
-		       address(receiverPubKey),
+		       address(bytes20(receiverPubKey)),
 		       transitPubKey,
 		       sigSender,
 		       sigReceiver));
     
     
     // Contract addresses don't have private keys
-    require(!address(receiverPubKey).isContract(), "Contract addresses are not allowed");
+    require(!address(bytes20(receiverPubKey)).isContract(), "Contract addresses are not allowed");
 
     // mark link as used, so that it can be used only once
     usedLinks[transitPubKey] = true;   
     
     // get receiver wallet
     IdentityFactory _identityFactory = IdentityFactory(0xA205a3501af9820d8DDa15278907d49796494323);    
-    address receiverWallet = _identityFactory.findOrCreateIdentity(receiverPubKey);
+    address payable receiverWallet = _identityFactory.findOrCreateIdentity(receiverPubKey);
 
     // transfer tokens
     transferToken(receiverWallet, tokenAddress, tokenAmount);

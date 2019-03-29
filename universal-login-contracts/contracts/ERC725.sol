@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 
 contract ERC725 {    
@@ -7,6 +7,6 @@ contract ERC725 {
     event ExecutionFailed(uint256 indexed executionId, address indexed to, uint256 indexed value, bytes data);
     event Approved(uint256 indexed executionId, bool approved);
     
-    function execute(address _to, uint256 _value, bytes _data) public returns (uint256 executionId);
+    function execute(address _to, uint256 _value, bytes memory _data) public returns (uint256 executionId);
     function approve(uint256 _id) public returns (bool success);
 }

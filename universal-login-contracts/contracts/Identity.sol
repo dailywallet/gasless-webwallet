@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./ERC1077.sol";
 import './InviteLinkScheme.sol';
