@@ -1,6 +1,6 @@
 const defaultDeployOptions = {
-  gasLimit: 3500000,
-  gasPrice: 9000000000
+  gasLimit: 4000000,
+  gasPrice: 10**10
 };
   
 export default defaultDeployOptions;

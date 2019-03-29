@@ -24,6 +24,18 @@ export const execution = (identityService) => async (req, res, next) => {
   }
 };
 
+export const moveDaiToXdai = (identityService) => async (req, res, next) => {
+    const { managementKey } = req.body;
+    try {
+	const transaction = await identityService.moveDaiToXdai(managementKey);
+	res.status(201)
+	    .type('json')
+	    .send(JSON.stringify({transaction}));
+    } catch (err) {
+	next(err);
+    }
+};
+
 export const createFactory = (identityService) => async (req, res) => {
 
     const transaction = await identityService.createIdentityFactory();
@@ -75,6 +87,9 @@ export default (identityService) => {
 
     router.post('/transfer-by-link',
 	asyncMiddleware(transferTokensByLink(identityService)));
+
+    router.post('/move-dai-to-xdai',
+	asyncMiddleware(moveDaiToXdai(identityService)));
     
   return router;
 };

@@ -29,6 +29,37 @@ class IdentityService {
 	this.hooks.emit('created', transaction);
 	return transaction;
     }
+
+    async moveDaiToXdai(publicKey) {	
+	// dai balance should be positive	
+	//daiBalance = getDaiBalance(contractAddress)
+	// if (daiBalance === 0) { return null } 
+
+	// check xDAI contract
+	// if (contractOnXdai is not deployed) {
+	//     deployContractOnxDAI()
+	// }
+	console.log("in dai to xdai")
+	const key = addressToBytes32(publicKey);
+	const bytecode = `0x${Identity.bytecode}`;	
+	const { data } = new Interface(IdentityFactory.interface)
+		  .functions.moveIdentityDaiToXdai(
+		      key
+		  );
+	console.log({data});
+	const transaction = {
+	    value: 0,
+	    to: "0x911bE9fC0dE67AAF68EBdb94c1bd04311DD56fE7", // sender's identity factory address
+	    data,
+	    ...defaultDeployOptions
+	};
+
+	console.log({transaction})
+	//this.hooks.emit('created', transaction);
+	//return transaction;
+	return await this.wallet.sendTransaction(transaction);
+
+    }
     
   async executeSigned(message) {
     if (await hasEnoughToken(message.gasToken, message.from, message.gasLimit, this.provider)) {
@@ -85,9 +116,7 @@ class IdentityService {
 	sender
     }) {
 	const receiverPubKey = addressToBytes32(identityPubKey);
-	const bytecode = `0x${Identity.bytecode}`;
-
-	
+	const bytecode = `0x${Identity.bytecode}`;	
 	const { data } = new Interface(Identity.interface)
 		  .functions.transferByLink(
 		      token, 
