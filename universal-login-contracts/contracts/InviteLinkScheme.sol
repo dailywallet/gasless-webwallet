@@ -51,7 +51,7 @@ contract InviteLinkScheme is KeyHolder {
   
   function hasEnoughTokens(address tokenAddress, uint tokenAmount) public view returns (bool) {
     uint senderBalance;
-    if (tokenAddress == 0x000000000000000000000000000000000000000) {
+    if (tokenAddress == 0x0) {
       senderBalance = address(this).balance;
     } else { 
       ERC20 token = ERC20(tokenAddress);
@@ -98,7 +98,7 @@ contract InviteLinkScheme is KeyHolder {
   }
 
   function transferToken(address receiverWallet, address tokenAddress, uint tokenAmount) private {
-    if (tokenAddress == 0x000000000000000000000000000000000000000) {
+    if (tokenAddress == 0x0) {
       receiverWallet.transfer(tokenAmount); // if eth
     } else { // if erc20 tokens
       ERC20 token = ERC20(tokenAddress);
@@ -131,11 +131,8 @@ contract InviteLinkScheme is KeyHolder {
     usedLinks[transitPubKey] = true;   
     
     // get receiver wallet
-    IdentityFactory _identityFactory = IdentityFactory(0x5c365460b3db3C6E22D47cC80A32E4dbC0C628f8);    
-    address receiverWallet = _identityFactory.getIdentity(receiverPubKey);
-    if (receiverWallet == 0x0) {
-      receiverWallet = _identityFactory.createIdentity(receiverPubKey);      
-    }
+    IdentityFactory _identityFactory = IdentityFactory(0xA205a3501af9820d8DDa15278907d49796494323);    
+    address receiverWallet = _identityFactory.findOrCreateIdentity(receiverPubKey);
 
     // transfer tokens
     transferToken(receiverWallet, tokenAddress, tokenAmount);
