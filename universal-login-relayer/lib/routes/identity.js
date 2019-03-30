@@ -13,6 +13,19 @@ export const create = (identityService) => async (req, res, next) => {
   }
 };
 
+export const deployIdentityFromFactory = (identityService) => async (req, res, next) => {
+  const { managementKey } = req.body;
+  try {
+      const transaction = await identityService.deployIdentityFromFactory(managementKey);
+      res.status(201)
+	  .type('json')
+	  .send(JSON.stringify({transaction}));
+  } catch (err) {
+      next(err);
+  }
+};
+
+
 export const execution = (identityService) => async (req, res, next) => {
   try {
     const transaction = await identityService.executeSigned(req.body);
@@ -90,6 +103,10 @@ export default (identityService) => {
 
     router.post('/move-dai-to-xdai',
 	asyncMiddleware(moveDaiToXdai(identityService)));
+
+    router.post('/deploy-from-factory',
+	asyncMiddleware(deployIdentityFromFactory(identityService)));
+
     
   return router;
 };

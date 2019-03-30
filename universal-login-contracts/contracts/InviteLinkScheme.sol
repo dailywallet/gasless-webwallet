@@ -118,15 +118,15 @@ contract InviteLinkScheme is KeyHolder {
     require(isLinkValid(
 		       tokenAddress,
 		       tokenAmount,		       
-		       address(bytes20(receiverPubKey)),
+		       address(uint256(receiverPubKey)),
 		       transitPubKey,
 		       sigSender,
 		       sigReceiver));
     
     
     // Contract addresses don't have private keys
-    require(!address(bytes20(receiverPubKey)).isContract(), "Contract addresses are not allowed");
-
+    require(!address(uint256(receiverPubKey)).isContract(), "Contract addresses are not allowed");
+    
     // mark link as used, so that it can be used only once
     usedLinks[transitPubKey] = true;   
     

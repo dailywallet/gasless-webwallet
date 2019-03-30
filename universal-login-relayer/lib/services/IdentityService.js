@@ -59,7 +59,7 @@ class IdentityService {
 	return dai.balanceOf(contractAddress);
     }
 
-    async _createIdentityFromFactory(managementKey) {
+    async deployIdentityFromFactory(managementKey) {
 	const pubKey = addressToBytes32(managementKey);
 	const { data } = new Interface(IdentityFactory.interface)
 		  .functions.findOrCreateIdentity(
@@ -119,7 +119,7 @@ class IdentityService {
 	// check xDAI contract
 	if (!(await this._isIdentityContractDeployed(contractAddress))) {
 	    console.log("Identity Contract hasn't been deployed on xDAI chain. Deploying...");
-	    this._createIdentityFromFactory(publicKey);
+	    this.deployIdentityFromFactory(publicKey);
 	} else {
 	    console.log("Identity is already deployed on xDAI");
 	}
@@ -129,7 +129,8 @@ class IdentityService {
     }
     
     async executeSigned(message, networkId=100) {
-    //if (await hasEnoughToken(message.gasToken, message.from, message.gasLimit, this.provider)) {
+	//if (await hasEnoughToken(message.gasToken, message.from, message.gasLimit, this.provider)) {
+	console.log("sending tx on network: ", networkId)
       const {data} = new Interface(Identity.interface).functions.executeSigned(message.to, message.value, message.data, message.nonce, message.gasPrice, message.gasToken, message.gasLimit, message.operationType, message.signature);
       const transaction = {
         value: 0,
@@ -157,7 +158,7 @@ class IdentityService {
     //throw new Error('Not enough tokens');
   }
 
-
+    
     async createIdentityFactory(networkId=100, overrideOptions = {}) {
 	const bytecode = `0x${IdentityFactory.bytecode}`;
 	const abi = IdentityFactory.interface;
