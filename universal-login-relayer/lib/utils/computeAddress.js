@@ -4,11 +4,7 @@ import { utils } from 'ethers';
 
 function buildCreate2Address(creatorAddress, saltHex, byteCode) {
 
-    console.log({ creatorAddress, saltHex, byteCode });
-
     const byteCodeHash = utils.keccak256(byteCode);
-    console.log({ byteCodeHash })
-    
     return `0x${utils.keccak256(`0x${[
 	'ff',
 	creatorAddress,

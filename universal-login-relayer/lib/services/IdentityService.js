@@ -6,6 +6,8 @@ import { computeAddress } from '../utils/computeAddress';
 import ethers, {utils, Interface} from 'ethers';
 import defaultDeployOptions from '../config/defaultDeployOptions';
 
+// #TODO move address to config
+const IDENTITY_FACTORY_ADDRESS = "0x911bE9fC0dE67AAF68EBdb94c1bd04311DD56fE7";
 
 
 class IdentityService {
@@ -51,48 +53,79 @@ class IdentityService {
 	return transaction;
     }
 
-    _mainnetDaiBalance() {
-	
+    _getDaiBalance(contractAddress) {
+	const DAI_ADDRESS = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
+	const dai = new ethers.Contract(DAI_ADDRESS, ERC20.abi, this.mainnetProvider);
+	return dai.balanceOf(contractAddress);
+    }
+
+    async _createIdentityFromFactory(managementKey) {
+	const pubKey = addressToBytes32(managementKey);
+	const { data } = new Interface(IdentityFactory.interface)
+		  .functions.findOrCreateIdentity(
+		      pubKey
+		  );
+	const transaction = {
+	    value: 0,
+	    to: IDENTITY_FACTORY_ADDRESS, 
+	    data,
+	    ...defaultDeployOptions
+	};
+
+	return await this.xdaiWallet.sendTransaction(transaction);
+    }
+
+    async _isIdentityContractDeployed(addr) {
+	let code = await this.xdaiProvider.getCode(addr);
+	console.log({code})
+	return (code !== '0x');
+    }
+
+    async _moveDaiToXdai(publicKey) {
+	const key = addressToBytes32(publicKey);
+	const bytecode = `0x${Identity.bytecode}`;	
+	const { data } = new Interface(IdentityFactory.interface)
+		  .functions.moveIdentityDaiToXdai(
+		      key
+		  );
+	console.log({data});
+
+	const transaction = {
+	    value: 0,
+	    to: IDENTITY_FACTORY_ADDRESS, 
+	    data,
+	    ...defaultDeployOptions
+	};
+
+	console.log({transaction})
+	//this.hooks.emit('created', transaction);
+	//return transaction;
+	return await this.mainnetWallet.sendTransaction(transaction);
     }
     
     async moveDaiToXdai(publicKey) {	
 	// dai balance should be positive
-
 	const contractAddress = computeAddress(publicKey);
 	console.log({contractAddress, publicKey});
-	return {contractAddress};
-	//daiBalance = getDaiBalance(contractAddress)
-	// if (daiBalance === 0) { return null } 
+
+	// check DAI balance
+	const daiBalance = (await this._getDaiBalance(contractAddress)).toString();
+	console.log({daiBalance})
+	if (daiBalance == "0") {
+	    console.log("DAI balance is 0. Doing nothing.");
+	    return { success: false, message: "DAI balance is 0" };
+	} 
 
 	// check xDAI contract
-	// if (contractOnXdai is not deployed) {
-	//     deployContractOnxDAI()
-	// }
+	if (!(await this._isIdentityContractDeployed(contractAddress))) {
+	    console.log("Identity Contract hasn't been deployed on xDAI chain. Deploying...");
+	    this._createIdentityFromFactory(publicKey);
+	} else {
+	    console.log("Identity is already deployed on xDAI");
+	}
 
-	
-	
-	// const key = addressToBytes32(publicKey);
-	// const bytecode = `0x${Identity.bytecode}`;	
-	// const { data } = new Interface(IdentityFactory.interface)
-	// 	  .functions.moveIdentityDaiToXdai(
-	// 	      key
-	// 	  );
-	// console.log({data});
-
-	// // #TODO move address to config
-	// const IDENTITY_FACTORY_ADDRESS = "0x911bE9fC0dE67AAF68EBdb94c1bd04311DD56fE7";
-	// const transaction = {
-	//     value: 0,
-	//     to: IDENTITY_FACTORY_ADDRESS, 
-	//     data,
-	//     ...defaultDeployOptions
-	// };
-
-	// console.log({transaction})
-	// //this.hooks.emit('created', transaction);
-	// //return transaction;
-	// return await this.xdaiWallet.sendTransaction(transaction);
-
+	// move DAI to xDAI
+	return await this._moveDaiToXdai(publicKey);
     }
     
     async executeSigned(message, networkId=100) {
