@@ -41,23 +41,23 @@ contract ERC725ApprovalScheme is KeyHolder, ERC725 {
 
     function execute(address _to, uint256 _value, bytes memory _data)
         public
-      onlyManagementOrActionKeys(bytes32(bytes20(msg.sender)))
+      onlyManagementOrActionKeys(bytes32(uint256(msg.sender)))
         returns(uint256 executionId)
     {
-      require(_to != address(this) || keyHasPurpose(bytes32(bytes20(msg.sender)), MANAGEMENT_KEY), "Management key required for actions on identity");
+      require(_to != address(this) || keyHasPurpose(bytes32(uint256(msg.sender)), MANAGEMENT_KEY), "Management key required for actions on identity");
         return addExecution(_to, _value, _data);
     }
 
     function approve(uint256 _id)
         public
-      onlyManagementOrActionKeys(bytes32(bytes20(msg.sender)))
-      onlyUnusedKey(_id, bytes32(bytes20(msg.sender)))
+      onlyManagementOrActionKeys(bytes32(uint256(msg.sender)))
+      onlyUnusedKey(_id, bytes32(uint256(msg.sender)))
         returns(bool shouldExecute)
     {
         require(executions[_id].to != address(0), "Invalid execution id");
-        require(executions[_id].to != address(this) || keyHasPurpose(bytes32(bytes20(msg.sender)), MANAGEMENT_KEY), "Management key required for actions on identity");
+        require(executions[_id].to != address(this) || keyHasPurpose(bytes32(uint256(msg.sender)), MANAGEMENT_KEY), "Management key required for actions on identity");
 
-        executions[_id].approvals.push(bytes32(bytes20(msg.sender)));
+        executions[_id].approvals.push(bytes32(uint256(msg.sender)));
         if (executions[_id].approvals.length == requiredApprovals) {
             return doExecute(_id);
         }

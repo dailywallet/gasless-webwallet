@@ -43,7 +43,7 @@ contract ERC1077 is KeyHolder, IERC1077 {
             gasLimit,
             operationType,
             signatures);
-        return keyExist(bytes32(bytes20(signer)));
+        return keyExist(bytes32(uint256(signer)));
     }
 
     function calculateMessageHash(

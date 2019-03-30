@@ -28,7 +28,7 @@ contract KeyHolder is ERC725KeyHolder {
     }
 
     modifier onlyManagementKeyOrThisContract() {
-      bool isManagementKey = keyHasPurpose(bytes32(bytes20(msg.sender)), MANAGEMENT_KEY);
+      bool isManagementKey = keyHasPurpose(bytes32(uint256(msg.sender)), MANAGEMENT_KEY);
         require(isManagementKey || msg.sender == address(this), "Sender not permissioned");
         _;
     }

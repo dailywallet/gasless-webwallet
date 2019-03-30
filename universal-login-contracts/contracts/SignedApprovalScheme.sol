@@ -56,12 +56,12 @@ contract SignedApprovalScheme is KeyHolder {
         public pure returns (bytes32)
     {
         bytes32 messageHash = keccak256(abi.encodePacked(_to, _from, _value, _data, _nonce, _gasToken, _gasPrice, _gasLimit));
-        return bytes32(bytes20(messageHash.toEthSignedMessageHash().recover(_messageSignature)));
+        return bytes32(uint256(messageHash.toEthSignedMessageHash().recover(_messageSignature)));
     }
 
     function getSignerForApprovals(uint256 _id, bytes memory _messageSignature) public pure returns(bytes32) {
         bytes32 messageHash = keccak256(abi.encodePacked((_id)));
-        return bytes32(bytes20(messageHash.toEthSignedMessageHash().recover(_messageSignature)));
+        return bytes32(uint256(messageHash.toEthSignedMessageHash().recover(_messageSignature)));
     }
 
     function executeSigned(
@@ -87,7 +87,7 @@ contract SignedApprovalScheme is KeyHolder {
         bytes32 signer = getSignerForApprovals(_id, _messageSignature);
         require(executions[_id].to != address(this) || keyHasPurpose(signer, MANAGEMENT_KEY), "Management key required for actions on identity");
 
-        executions[_id].approvals.push(bytes32(bytes20(msg.sender)));
+        executions[_id].approvals.push(bytes32(uint256(msg.sender)));
         if (executions[_id].approvals.length == requiredApprovals) {
             return doExecute(_id);
         }

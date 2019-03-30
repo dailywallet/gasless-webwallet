@@ -94,7 +94,7 @@ contract InviteLinkScheme is KeyHolder {
     
     // check that the hash was signed by sender
     address signer = hash.toEthSignedMessageHash().recover(sigSender);
-    return keyExist(bytes32(bytes20(signer)));
+    return keyExist(bytes32(uint256(signer)));
   }
 
   function transferToken(address payable receiverWallet, address tokenAddress, uint tokenAmount) private {
