@@ -21,12 +21,16 @@ function errorHandler (err, req, res, next) {
 }
 
 class Relayer {
-  constructor(config, provider = '') {
+  constructor(config) {
     this.port = config.port || defaultPort;
     this.config = config;
     this.hooks = new EventEmitter();
-    this.provider = provider || new ethers.providers.JsonRpcProvider(config.jsonRpcUrl, config.chainSpec);
-    this.wallet = new ethers.Wallet(config.privateKey, this.provider);
+      this.xdaiProvider = new ethers.providers.JsonRpcProvider(config.xdaiRpcUrl, config.xdaiChainSpec);      
+      this.xdaiWallet = new ethers.Wallet(config.privateKey, this.xdaiProvider);
+
+      this.mainnetProvider = new ethers.providers.JsonRpcProvider(config.mainnetRpcUrl, config.mainnetChainSpec);      
+      this.mainnetWallet = new ethers.Wallet(config.privateKey, this.mainnetProvider);
+      
   }
 
   start() {
@@ -37,12 +41,12 @@ class Relayer {
       credentials: true
     }));
     //this.ensService = new ENSService(this.config.chainSpec.ensAddress, this.config.ensRegistrars);
-    this.authorisationService = new AuthorisationService();
-    this.identityService = new IdentityService(this.wallet, this.ensService, this.authorisationService, this.hooks, this.provider);
+    //this.authorisationService = new AuthorisationService();
+      this.identityService = new IdentityService(this.xdaiWallet, this.xdaiProvider, this.mainnetWallet, this.mainnetProvider, this.hooks);
     this.app.use(bodyParser.json());
     this.app.use('/identity', IdentityRouter(this.identityService));
     this.app.use('/config', ConfigRouter(this.config.chainSpec));
-    this.app.use('/authorisation', RequestAuthorisationRouter(this.authorisationService));
+    //this.app.use('/authorisation', RequestAuthorisationRouter(this.authorisationService));
     this.app.use(errorHandler);
     this.server = this.app.listen(this.port);
   }
