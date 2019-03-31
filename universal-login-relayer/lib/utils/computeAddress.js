@@ -16,7 +16,7 @@ function buildCreate2Address(creatorAddress, saltHex, byteCode) {
 
 export const computeAddress = (managementKey) => {
     const factoryAddress = "0x911bE9fC0dE67AAF68EBdb94c1bd04311DD56fE7";
-    const libAddress = '0x1D3Cc0F872F477Dd83Ce860fA163a67c94f90261'.slice(2);
+    const libAddress = '0x8de2bb94642276988ddf7dfb6375191c08a229ff'.slice(2);
     const pubKey = utils.hexlify(addressToBytes32(managementKey));
 
 
