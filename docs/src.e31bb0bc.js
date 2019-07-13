@@ -97629,8 +97629,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.TOKEN_ADDRESS = void 0;
-var TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000'; //export const TOKEN_ADDRESS = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
-//export const TOKEN_ADDRESS = '0x841cea2a436e80561c4be35767d7b6304915a1c2';
+var TOKEN_ADDRESS = '0x000000000000000000000000000000000000000'; // '0x841cea2a436e80561c4be35767d7b6304915a1c2'; DAI
 
 exports.TOKEN_ADDRESS = TOKEN_ADDRESS;
 },{}],"components/Faucet.js":[function(require,module,exports) {
